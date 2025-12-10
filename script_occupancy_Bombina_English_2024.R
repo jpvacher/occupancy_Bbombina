@@ -318,14 +318,14 @@ residuals
 dmin <- 0 #minimum distance in meters
 dmax <- 10000 #maximum distance in meters
 by <- 500 #distance gap for distance classes in meters
-d0  <-  dmin + by #first distance class is defined from the minimum distance
-dists  <-  seq(from = d0, to = dmax, by = by) #vector of distance classes
-n  <-  length(dists) #number of distance classes
+d0 <- dmin + by #first distance class is defined from the minimum distance
+dists <- seq(from = d0, to = dmax, by = by) #vector of distance classes
+n <- length(dists) #number of distance classes
 coords <- as.matrix(residuals[c("lon", "lat")]) #geographic coordinates of residuals
-u  <-  dmin #minimum distance
-MI  <-  numeric(0) #defines a numeric vector columns where we will store MI (Moran'sI)
-MI.p  <-  numeric(0) #defines a numeric vector columns where we will store MI.p (p-value of Moran's I)
-Crit.p  <-  c("*", rep("ns", n-1)) #column with significance
+u <- dmin #minimum distance
+MI <- numeric(0) #defines a numeric vector columns where we will store MI (Moran'sI)
+MI.p <- numeric(0) #defines a numeric vector columns where we will store MI.p (p-value of Moran's I)
+Crit.p <- c("*", rep("ns", n-1)) #column with significance
 
 ##5.3 Loop to computeMoran's I, p-value, and significance criteria for each distance class ####
 for(i in 1:n){
