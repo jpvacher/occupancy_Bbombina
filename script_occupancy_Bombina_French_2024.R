@@ -56,7 +56,7 @@ covarsite <- data %>%
     data.frame() #transformer en data frame
 
 ##3.4 MATRICE DES ANNÉES ####
-year <- matrix(data = c("2022", "2024"),nrow = nrow(datay), ncol = 2, byrow = T) #on créé une matrice des années
+year <- matrix(data = c("2022", "2024"), nrow = nrow(datay), ncol = 2, byrow = T) #on créé une matrice des années
 
 
 #4. MODÈLE D'OCCUPATION MULTI-SAISON 2022 - 2024 ####
@@ -66,6 +66,7 @@ umf.multi <- unmarkedMultFrame(datay, siteCovs = covarsite, obsCovs = obscov,
                                yearlySiteCovs = list(Year = year),  numPrimary = 2) 
 #numPrimary = nombre d'années. Dans le cas présent, il y a 2 années de suivi dans 120 unités d'échantillonnage
 summary(umf.multi)
+str(umf.multi@obsCovs)
 
 #psi = occupation initiale
 #gamma = colonisation
@@ -279,7 +280,7 @@ jpeg("figure3.jpg", height = 17, width = 17*2, units = "cm", res = 300)
 grid.arrange(g1, g2, ncol = 2, nrow = 1)
 dev.off()
 
-#5. AUTOCORRELATION SPATIALE ####
+#5. EVALUATION DE L'AUTOCORRELATION SPATIALE ####
 
 ##5.1 on construit une table des residus avec les coordonnées des centroïdes de chacune des 120 unités d'échantillonnage ####
 
@@ -301,29 +302,29 @@ residuals #on regarde à quoi ça ressemble
 dmin <- 0 #distance minimum en mètres
 dmax <- 10000 #distance maximum en mètres
 by <- 500 #fourchette de distance pour les classes de distance en mètres
-d0  <-  dmin + by #on définit la première classe de distance à partir de la distance minimum
-dists  <-  seq(from = d0, to = dmax, by = by) #vecteur de classes de distances
-n  <-  length(dists) #nombre de classes de distance
+d0 <- dmin + by #on définit la première classe de distance à partir de la distance minimum
+dists <- seq(from = d0, to = dmax, by = by) #vecteur de classes de distances
+n <- length(dists) #nombre de classes de distance
 coords <- as.matrix(residuals[c("lon", "lat")]) #coordonnées géographiques des résidus
-u  <-  dmin #distance minimum
-MI  <-  numeric(0) #on définit une colonne vecteur numérique où sera stocké MI (indice de Moran) 
-MI.p  <-  numeric(0) #on définit une colonne vecteur numérique où sera stockée MI.p (p-value de l'indice de Moran)
-Crit.p  <-  c("*", rep("ns", n-1)) #colonne qui indique la significativité
+u <- dmin #distance minimum
+MI <- numeric(0) #on définit une colonne vecteur numérique où sera stocké MI (indice de Moran) 
+MI.p <- numeric(0) #on définit une colonne vecteur numérique où sera stockée MI.p (p-value de l'indice de Moran)
+Crit.p <- c("*", rep("ns", n-1)) #colonne qui indique la significativité
 
 ##5.3 Boucle pour calculer Moran's I, p-value et le critères de significativité pour chaque classe de distance ####
 for(i in 1:n){
-  nb  <-  dnearneigh(coords, u, u + by, longlat = TRUE) # identifie les voisins
-  nb.w  <-  nb2listw(nb, style="B", zero.policy = TRUE) # attribue les poids
+  nb <- dnearneigh(coords, u, u + by, longlat = TRUE) # identifie les voisins
+  nb.w <- nb2listw(nb, style="B", zero.policy = TRUE) # attribue les poids
   mi <- moran.test(residuals$res, nb.w, randomisation = TRUE,  #calcul de l'indice de Moran
                    na.action = na.exclude, zero.policy = TRUE)
-  MI[i]  <-  mi$estimate #valeur de l'indice de Moran
-  MI.p[i]  <-  mi$p.value #p.value de l'indice de Moran
+  MI[i] <- mi$estimate #valeur de l'indice de Moran
+  MI.p[i] <- mi$p.value #p.value de l'indice de Moran
   ifelse(MI.p[i] < 0.05, Crit.p[i] <- "*", Crit.p[i] <- "ns") #critère de significativité
   u=u+by
 }
 
 ##5.4 stocker les résultats dans une table ####
-res  <-  as.data.frame(cbind(dists=dists, MI = round(MI,2), MI.p = round(MI.p,3), 
+res <- as.data.frame(cbind(dists=dists, MI = round(MI,2), MI.p = round(MI.p,3), 
                              Crit.p.B = Crit.p))
 res #on regarde à quoi ça ressemble
 #aucune classe de distance ne montre un indice de Moran significatif.
