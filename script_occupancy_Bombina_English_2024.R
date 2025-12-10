@@ -49,7 +49,8 @@ obscov <- list(temp = obscov[,1:4], mares = obscov[, 5:8])
 #Note:variables were previously scaled
 #we transform values into log to avoid large gaps between values
 covarsite <- data %>%
-  select(dist_bombina, dist_coursEau, dist_planEau, prairie_surf, planEau_surf, nb_planEau) %>% #select occupancy variables
+  select(dist_bombina, dist_coursEau, dist_planEau, prairie_surf, 
+         planEau_surf, nb_planEau) %>% #select occupancy variables
   mutate_at(c(1:6), list(~(c(.) + 2))) %>% #add 2 to avoid negative values
   mutate_at(c(1:6), list(~log(c(.)))) %>% #transforma into log to avoid distribution gaps
     data.frame() #transform to data frame
