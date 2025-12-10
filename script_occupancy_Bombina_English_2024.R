@@ -286,7 +286,6 @@ g2 = ggplot(predictions.bombina, aes(x = dist_bombina2, y = Predicted)) +
 g2
 #This shows that the further the cell from the nearest occupied water body, the less chance has a cell to be occupied
 
-
 #save as jpg file :
 jpeg("figure2.jpg", width = 17, height = 17, res = 300, units = "cm")
 g2
