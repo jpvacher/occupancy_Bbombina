@@ -55,7 +55,10 @@ covarsite <- data %>%
     data.frame() #transform to data frame
 
 ##3.4 MATRIX OF YEARS ####
-year <- matrix(data = c("2022", "2024"),nrow = nrow(datay), ncol = 2, byrow = T) #create a matrix of years
+year <- matrix(data = c("2022", "2024"), #create a matrix of years
+               nrow = nrow(datay), 
+               ncol = 2, #This figure corresponds to the number of years (primary occasions)
+               byrow = T) 
 
 
 #4. MULTI-SEASON OCCUPANCY MODEL 2022 - 2024 ####
@@ -66,6 +69,7 @@ umf.multi <- unmarkedMultFrame(datay, siteCovs = covarsite, obsCovs = obscov,
 #numPrimary = number of years. In this case, there are 2 years of monitoring in 120 sample cells
 summary(umf.multi)
 
+#Reminder:
 #psi =  initial occupancy
 #gamma = colonization
 #epsilon = extinction
@@ -154,9 +158,12 @@ dev.off()
 ###4.3.1 select the best model ####
 
 ####first we build a model with all variables, then estimate AICc with dredge :####
-psi.total  <- colext(psiformula = ~ dist_bombina + dist_coursEau + dist_planEau +
-                       prairie_surf + planEau_surf + nb_planEau, gammaformula = ~ 1, 
-                               epsilonformula = ~ 1, pformula = ~ mares, data = umf.multi)
+psi.total  <- colext(psiformula = ~ dist_bombina + dist_coursEau + dist_planEau + 
+                       prairie_surf + planEau_surf + nb_planEau, 
+                     gammaformula = ~ 1,
+                     epsilonformula = ~ 1, 
+                     pformula = ~ mares, 
+                     data = umf.multi)
 
 modelList <- dredge(psi.total, rank = "AICc")
 tab_df(modelList[modelList$delta<2,]) #select models with delta AICc <2
@@ -165,8 +172,11 @@ tab_df(modelList)
 
 ####let's fit this model with psi(dist_bombina, dist_planEau, prairie_surf) and p(mares) ####
 psi.bombinadplanEauprairie  <- colext(psiformula= ~ dist_bombina + dist_planEau +
-                       prairie_surf, gammaformula = ~ 1, 
-                     epsilonformula = ~ 1, pformula = ~ mares, data = umf.multi)
+                       prairie_surf, 
+                       gammaformula = ~ 1, 
+                       epsilonformula = ~ 1, 
+                       pformula = ~ mares, 
+                       data = umf.multi)
 
 summary(psi.bombinadplanEauprairie) #check the effect of landscape variables on occupancy
 #we notice that dist_planEau (distance to water bodies) and prairie_surf (area of meadows) do not have a strong effect on estimation of occupancy probability
@@ -196,7 +206,7 @@ print(mb.boot, digit.vals = 4, digits.chisq = 4) # c-hat = 1.6  // chi-square = 
 
 #c-hat is slightly higher than for the model with 3 terms, but still acceptable (<2)
 #gof is ok
-#Finaly, we select this parsimonious model with only one term
+#Finally, we select this parsimonious model with only one term
 
 ##4.4 Values of estimated parameters ####
 
@@ -286,7 +296,7 @@ jpeg("figure5.jpg", height = 17, width = 17*2, units = "cm", res = 300) #we can 
 grid.arrange(g1, g2, ncol = 2, nrow = 1)
 dev.off()
 
-#5. SPATIAL AUTOCORRELATION####
+#5. CHECK SPATIAL AUTOCORRELATION####
 
 ##5.1 build a table with residuals of centroids coordinates of each 120 cells of the sample grid ####
 
@@ -319,18 +329,18 @@ Crit.p  <-  c("*", rep("ns", n-1)) #column with significance
 
 ##5.3 Loop to computeMoran's I, p-value, and significance criteria for each distance class ####
 for(i in 1:n){
-  nb  <-  dnearneigh(coords, u, u + by, longlat = TRUE) # identifies neighbors
-  nb.w  <-  nb2listw(nb, style="B", zero.policy = TRUE) # attributes weights
+  nb <- dnearneigh(coords, u, u + by, longlat = TRUE) # identifies neighbors
+  nb.w <- nb2listw(nb, style="B", zero.policy = TRUE) # attributes weights
   mi <- moran.test(residuals$res, nb.w, randomisation = TRUE, 
                    na.action = na.exclude, zero.policy = TRUE) #compute Moran's I
-  MI[i]  <-  mi$estimate #Moran's I value
-  MI.p[i]  <-  mi$p.value#Moran's I p.value
+  MI[i] <- mi$estimate #Moran's I value
+  MI.p[i] <- mi$p.value#Moran's I p.value
   ifelse(MI.p[i] < 0.05, Crit.p[i] <- "*", Crit.p[i] <- "ns") #significance criteria
-  u=u+by
+  u = u + by
 }
 
 ##5.4 stock results in a table####
-res  <-  as.data.frame(cbind(dists=dists, MI = round(MI,2), 
+res <- as.data.frame(cbind(dists=dists, MI = round(MI,2), 
                              MI.p = round(MI.p,3), Crit.p.B = Crit.p))
 res #check how it looks like
 #In this case:
