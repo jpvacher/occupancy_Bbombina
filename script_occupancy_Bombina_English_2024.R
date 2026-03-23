@@ -136,11 +136,11 @@ summary(predictions.mares) #check the values
 #now graph number of ponds over detection probability:
 g1 = ggplot(predictions.mares, aes(x = mares, y = Predicted)) +
   geom_line() +
-  geom_ribbon(alpha = .3, aes(ymin = lower, ymax = upper)) +
+  geom_ribbon(alpha = .3, fill = "red", aes(ymin = lower, ymax = upper)) +
   ylim(0, 1) +
   theme_bw() +
   labs(x="Number of water bodies per cell", y = "Detection probability") +
-  ggtitle("(A)") +
+  ggtitle("a") +
   theme(axis.text = element_text(size = 14), 
         axis.title = element_text(size = 18),
         title = element_text(size = 18))
@@ -149,7 +149,7 @@ g1
 #this shows that the higher the number of water bodies within a given sample cell, the higher the detection probability
 
 #save the graph as a jpg file:
-jpeg("figure1.jpg", width = 17, height = 17, res = 300, units = "cm")
+jpeg("figure3A.jpg", width = 17, height = 17, res = 300, units = "cm")
 g1
 dev.off()
 
@@ -188,7 +188,7 @@ print(mb.boot, digit.vals = 4, digits.chisq = 4) # c-hat = 1.46  // chi-sq = 5.6
 #c-hat with slight overdispersal
 #gof not so bad!
 
-####Fit a model with only on term for psi: dist_bombina ####
+####SELECTED MODEL: Fit a model with only on term for psi: dist_bombina ####
 ####this term has been selected because it inlfuences the most occupancy in the model with 3 terms
 psi.bombina  <- colext(psiformula= ~ dist_bombina, 
                        gammaformula = ~ 1,
@@ -273,11 +273,11 @@ summary(predictions.bombina)
 #now graph distance to the nearest occupied water body over occupancy probability:
 g2 = ggplot(predictions.bombina, aes(x = dist_bombina2, y = Predicted)) +
   geom_line() +
-  geom_ribbon(alpha=.3, aes(ymin = lower, ymax = upper)) +
+  geom_ribbon(alpha=.3, fill = "forestgreen", aes(ymin = lower, ymax = upper)) +
   ylim(0, 1) +
   xlim(0,500) +
   labs(x="Distance to the nearest occupied pond (m)", y="Occupancy probability") +
-  ggtitle("(B)") +
+  ggtitle("b") +
   theme_bw() +
   theme(axis.text = element_text(size = 14), 
         axis.title = element_text(size = 18),
@@ -287,12 +287,12 @@ g2
 #This shows that the further the cell from the nearest occupied water body, the less chance has a cell to be occupied
 
 #save as jpg file :
-jpeg("figure2.jpg", width = 17, height = 17, res = 300, units = "cm")
+jpeg("figure3B.jpg", width = 17, height = 17, res = 300, units = "cm")
 g2
 dev.off()
 
 ##4.7 save both graphs g1 and g2 in the same panel in a jpg file ####
-jpeg("figure5.jpg", height = 17, width = 17*2, units = "cm", res = 300) #we can downgrade res to 200, but 300 is better for printing
+jpeg("figure3.jpg", height = 17, width = 17*2, units = "cm", res = 300) #we can downgrade res to 200, but 300 is better for printing
 grid.arrange(g1, g2, ncol = 2, nrow = 1)
 dev.off()
 
