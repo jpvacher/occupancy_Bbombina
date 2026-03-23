@@ -2,7 +2,7 @@
 #FIRE-BELLIED TOAD IN MOSELLE PROJECT. YEARS 2022 AND 2024.
 # Script written by Jean-Pierre VACHER, with the contribution of Vincent CLEMENT ###
 #26 September 2024
-#updated 16 January 2025
+#updated 23 MArch 2026
 
 #------------------------------------------------------------------------------------#
 
@@ -195,6 +195,7 @@ psi.bombina  <- colext(psiformula= ~ dist_bombina,
                        epsilonformula = ~ 1, 
                        pformula = ~ mares, 
                        data = umf.multi)
+options(scipen = 999)
 summary(psi.bombina)
 AICc(psi.bombina)
 #312.05
